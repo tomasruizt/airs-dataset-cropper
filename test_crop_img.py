@@ -6,10 +6,9 @@ DATASET_PATH = "./dataset-sample"
 
 
 def test_crop_airs_dataset_creates_valid_dataset_structure():
-    new_base_dir = os.path.join(os.path.dirname(DATASET_PATH), "cropped")
-    if not os.path.isdir(new_base_dir):
-        crop_airs_dataset(basedir=DATASET_PATH)
+    crop_airs_dataset(basedir=DATASET_PATH)
 
+    new_base_dir = os.path.join(os.path.dirname(DATASET_PATH), "cropped")
     assert os.path.isdir(new_base_dir)
 
     new_image_dir = os.path.join(new_base_dir, "image")

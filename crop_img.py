@@ -32,7 +32,7 @@ def crop_airs_dataset(basedir: str, processes: int = 4) -> None:
 
     for suffix in ["image", "label"]:
         new_dir = os.path.join(new_basedir, suffix)
-        os.makedirs(new_dir)
+        os.makedirs(new_dir, exist_ok=True)
         img_dir = os.path.join(basedir, suffix)
         img_paths = (os.path.join(img_dir, fname) for fname in os.listdir(img_dir))
         with Pool(processes=processes) as p:
@@ -57,13 +57,12 @@ def _crop_into_100_imgs_and_dump(source_img_path: str, output_dir: str):
 
     cropped_img_size = source_img.size[0] / 10
     for idx, corner_coordinates in enumerate(product(space, space)):
-        x, y = corner_coordinates
-
-        cropped_img = source_img.crop((y, x, y + cropped_img_size, x + cropped_img_size))
-
-        cropped_img_fname = os.path.basename(source_img_path).replace(".tif",
-                                                                      "") + "_%d.tif" % idx
+        cropped_img_fname = os.path.basename(source_img_path).replace(".tif", "") + "_%d.tif" % idx
         cropped_img_full_path = os.path.join(output_dir, cropped_img_fname)
+        if os.path.exists(cropped_img_full_path):
+            continue
+        x, y = corner_coordinates
+        cropped_img = source_img.crop((y, x, y + cropped_img_size, x + cropped_img_size))
         cropped_img.save(cropped_img_full_path)
     print("cropped img {}".format(source_img_path))
 
