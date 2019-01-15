@@ -25,8 +25,9 @@ def crop_airs_dataset(basedir: str, processes: int = 4) -> None:
     assert os.path.isdir(image_dir)
     label_dir = os.path.join(basedir, "label")
     assert os.path.isdir(label_dir)
-    train_txt_file = os.path.join(basedir, "train.txt")
-    assert os.path.exists(train_txt_file)
+    index_fname = next((file for file in os.listdir(basedir) if file.endswith(".txt")))
+    index_file_path = os.path.join(basedir, index_fname)
+    assert os.path.exists(index_file_path)
 
     new_basedir = os.path.join(os.path.dirname(basedir), "cropped")
 
@@ -38,8 +39,8 @@ def crop_airs_dataset(basedir: str, processes: int = 4) -> None:
         with Pool(processes=processes) as p:
             p.map(_wrapper_crop_100_imgs_and_dump, zip(img_paths, repeat(new_dir)))
 
-    new_train_txt_file = os.path.join(new_basedir, "train.txt")
-    with open(train_txt_file, "r") as file, open(new_train_txt_file, "a") as out_file:
+    new_index_file_path = os.path.join(new_basedir, index_fname)
+    with open(index_file_path, "r") as file, open(new_index_file_path, "a") as out_file:
         for img_fname in file:
             for idx in range(100):
                 new_fname = img_fname.strip().replace(".tif", "") + "_%d.tif" % idx

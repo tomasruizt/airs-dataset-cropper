@@ -17,15 +17,16 @@ def test_crop_airs_dataset_creates_valid_dataset_structure():
     new_label_dir = os.path.join(new_base_dir, "label")
     assert _is_valid_dir(new_label_dir)
 
-    assert _is_valid_train_txt_file(new_base_dir)
+    assert _is_valid_index_txt_file(new_base_dir)
 
 
-def _is_valid_train_txt_file(new_base_dir) -> bool:
-    train_txt_file_fname = os.path.join(DATASET_PATH, "train.txt")
-    with open(os.path.join(new_base_dir, "train.txt"), "r") as new_train_txt_file:
-        new_img_fnames = {fname.strip() for fname in new_train_txt_file}
-    with open(train_txt_file_fname) as train_txt_file:
-        for img_fname in train_txt_file:
+def _is_valid_index_txt_file(new_base_dir) -> bool:
+    index_fname = next((file for file in os.listdir(new_base_dir) if file.endswith(".txt")))
+    index_file_path = os.path.join(DATASET_PATH, index_fname)
+    with open(os.path.join(new_base_dir, index_fname), "r") as new_index_file:
+        new_img_fnames = {fname.strip() for fname in new_index_file}
+    with open(index_file_path) as index_file:
+        for img_fname in index_file:
             for idx in range(100):
                 new_img_fname = img_fname.strip().replace(".tif", "") + "_%d.tif" % idx
                 assert new_img_fname in new_img_fnames
